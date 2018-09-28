@@ -1,0 +1,65 @@
+-- Alrighty, so this is a script that A1 and I (Atlantic) created, this has 2 features. It features an unpatched aimbot script with a no contest script.
+-- To toggle aimbot on/off, press "Q"
+-- To toggle no contest on/off, press "Y"
+ 
+--[[
+   --> Execute this in your gym.
+   --> Execute this on any court in a server and you're set
+   
+   --> Change _G.Min, _G.Max to change what the aimbot _
+       -- randomizes between
+     
+   --> Press Q to turn off aimbot. If you leave it as it is...
+   -- it isn't noticable. Just note that it will say great
+       -- accuracy when u shoot and its on.
+ --> Press Y to turn off no contest
+]]--
+ 
+ 
+local Run = game:GetService('RunService');
+local UIS = game:GetService('UserInputService');
+local Players = game:GetService('Players');
+local Player = Players['LocalPlayer'];
+local Mouse = Player:GetMouse()
+ 
+local Event = Instance.new('RemoteEvent')
+local FireServer = Event.FireServer
+local GetRange = Random.new()
+_G.Max, _G.Min = 150, 150;
+local Aim = true
+local Contest = true
+ 
+local mt = getrawmetatable(game);
+local midx = mt.__index;
+local ncll = mt.__namecall;
+local fuck = (setreadonly or make_writeable)
+fuck(mt, false)
+ 
+rawset(mt, '__namecall', function(obj, ...)
+local Args = {...};
+local Method = tostring(table.remove(Args));
+local Func = midx(obj, Method)
+ 
+if (Method == 'Kick') then
+debug.setupvalue(2, 'ScriptDebounce', true)
+return
+elseif (Func == FireServer) then
+if (tostring(obj) == 'shoot') and Aim then
+return FireServer(obj, Args[1], GetRange:NextInteger(_G.Min, _G.Max) or 100, true)
+     elseif (tostring(obj) == 'Big') and (Method == 'Value') and Contest then
+       debug.setupvalue(2, 'contest', 0)
+end
+end
+return ncll(obj, ...)
+end)
+ 
+UIS['InputBegan']:Connect(function(input, proc)
+if proc then return end
+if input.KeyCode == Enum.KeyCode.Q then
+  Aim = not Aim
+elseif input.KeyCode == Enum.KeyCode.Y then
+  Contest = not Contest
+end
+end)
+ 
+  -- Made by A1_exe and Atlantic --
